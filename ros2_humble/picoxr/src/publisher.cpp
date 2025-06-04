@@ -7,7 +7,6 @@
 #include <vector>
 #include <sstream>
 #include <string>
-
 #include "xr_msgs/msg/custom.hpp"
 #include "xr_msgs/msg/head.hpp"
 #include "xr_msgs/msg/controller.hpp"
@@ -74,12 +73,11 @@ void print_json(const json& j, int indent=1) {
     }
 }
 
- 
+
 std::vector<float> stringToFloatVector(const std::string& input) {
     std::vector<float> result;
     std::stringstream ss(input);
     std::string token;
-    
     while (std::getline(ss, token, ',')) {
         try {
             result.push_back(std::stof(token));
@@ -145,7 +143,7 @@ public:
             head_msg.status = -1;
           }
           custom_msg.head = head_msg;
-          
+
           // controller
           if (value_obj.contains("Controller")) {
             for (auto& element : value_obj["Controller"].items()) {
@@ -155,7 +153,7 @@ public:
               controller_msg.axis_x = ctrl_j["axisX"].get<float>();
               controller_msg.axis_y = ctrl_j["axisY"].get<float>();
               controller_msg.axis_click = ctrl_j["axisClick"].get<bool>();
-              controller_msg.grip = ctrl_j["grip"].get<float>();
+              controller_msg.gripper = ctrl_j["grip"].get<float>();
               controller_msg.trigger = ctrl_j["trigger"].get<float>();
               controller_msg.primary_button = ctrl_j["primaryButton"].get<bool>();
               controller_msg.secondary_button = ctrl_j["secondaryButton"].get<bool>();
@@ -185,7 +183,6 @@ public:
           // hand
 
           // body
-
 
           publisher_->publish(custom_msg);
           RCLCPP_INFO(this->get_logger(), "Publishing timestamp_ns '%ld'", custom_msg.timestamp_ns);

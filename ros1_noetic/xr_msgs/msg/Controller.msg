@@ -1,7 +1,7 @@
 float32 axis_x
 float32 axis_y
 bool axis_click
-float32 grip
+float32 gripper
 float32 trigger
 bool primary_button
 bool secondary_button

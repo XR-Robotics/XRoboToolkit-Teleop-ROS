@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>picoxr</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="472365351duino@gmail.com">duinodu</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>xr_msgs</build_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>xr_msgs</exec_depend>
+
+  <export/>
+</package>
