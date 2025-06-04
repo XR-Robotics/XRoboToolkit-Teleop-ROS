@@ -19,6 +19,7 @@ include(FetchContent)
 FetchContent_Declare(
   json
   URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(json)
 
@@ -33,12 +34,12 @@ ament_target_dependencies(talker
 if(NOT UNIX)
   message(FATAL_ERROR "Only support UNIX.") 
 endif()
-set(ROBOT_SDK "/opt/apps/picobusinesssuite/SDK/clientso/64")
+set(ROBOT_SDK "/opt/apps/roboticsservice/SDK")
 if(NOT EXISTS ${ROBOT_SDK})
   message(FATAL_ERROR "robot sdk not found. Please install robot sdk first.") 
 endif()
-set(PICORobotSDK_INCLUDE ${ROBOT_SDK})
-set(PICORobotSDK_LIB_PATH ${ROBOT_SDK})
+set(PICORobotSDK_INCLUDE ${ROBOT_SDK}/include)
+set(PICORobotSDK_LIB_PATH ${ROBOT_SDK}/x64)
 set(PICORobotSDK_LIB_NAME PXREARobotSDK)
 
 message(STATUS "PICORobotSDK_INCLUDE: ${PICORobotSDK_INCLUDE}") 
