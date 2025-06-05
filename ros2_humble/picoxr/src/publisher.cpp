@@ -99,98 +99,106 @@ public:
 
   void OnPXREAClientCallback(void* context, PXREAClientCallbackType type,int status,void* userData)
   {
+    (void)context;
     switch (type)
     {
-    case PXREAServerConnect:
-        std::cout <<"server connect"  << std::endl;
-        break;
-    case PXREAServerDisconnect:
-        std::cout  <<"server disconnect"  << std::endl;
-        break;
-    case PXREADeviceFind:
-        std::cout << "device find"<< (const char*)userData << std::endl;
-        break;
-    case PXREADeviceMissing:
-        std::cout <<"device missing"<<(const char*)userData<<  std::endl;
-        break;
-    case PXREADeviceConnect:
-        std::cout <<"device connect"<<(const char*)userData<<status<< std::endl;
-        break;
-    case PXREADeviceStateJson:
-        auto& dsj = *((PXREADevStateJson*)userData);
-        // std::cout <<"device data"<< dsj.stateJson << std::endl;
-        try {
-          auto json_obj = json::parse(dsj.stateJson);
-					// print_json(json_obj);
-          auto value_str = json_obj["value"].get<std::string>();
-          auto value_obj = json::parse(value_str);
+      case PXREAServerConnect:
+          std::cout <<"server connect"  << std::endl;
+          break;
+      case PXREAServerDisconnect:
+          std::cout  <<"server disconnect"  << std::endl;
+          break;
+      case PXREADeviceFind:
+          std::cout << "device find"<< (const char*)userData << std::endl;
+          break;
+      case PXREADeviceMissing:
+          std::cout <<"device missing"<<(const char*)userData<<  std::endl;
+          break;
+      case PXREADeviceConnect:
+          std::cout <<"device connect"<<(const char*)userData<<status<< std::endl;
+          break;
+      case PXREADeviceStateJson: {
+          auto& dsj = *((PXREADevStateJson*)userData);
+          // std::cout <<"device data"<< dsj.stateJson << std::endl;
+          try {
+            auto json_obj = json::parse(dsj.stateJson);
+				  	// print_json(json_obj);
+            auto value_str = json_obj["value"].get<std::string>();
+            auto value_obj = json::parse(value_str);
 
-          auto custom_msg = xr_msgs::msg::Custom();
-          custom_msg.timestamp_ns = value_obj["timeStampNs"].get<uint64_t>();
-          custom_msg.input = value_obj["Input"].get<int>();
-          
-          // head
-          auto head_msg = xr_msgs::msg::Head();
-          if (value_obj.contains("Head")) {
-            auto head_j = value_obj["Head"];
-            std::vector<float> head_pose = stringToFloatVector(head_j["pose"].get<std::string>());
-            if (head_pose.size() != 7) {
-              std::cerr << "Parse failed: head pose data length != 7" << std::endl;
-            }
-            std::copy(head_pose.begin(), head_pose.end(), head_msg.pose.data());
-            head_msg.status = head_j["status"].get<int>();
-          } else {
-            head_msg.status = -1;
-          }
-          custom_msg.head = head_msg;
+            auto custom_msg = xr_msgs::msg::Custom();
+            custom_msg.timestamp_ns = value_obj["timeStampNs"].get<uint64_t>();
+            custom_msg.input = value_obj["Input"].get<int>();
 
-          // controller
-          if (value_obj.contains("Controller")) {
-            for (auto& element : value_obj["Controller"].items()) {
-              auto controller_msg = xr_msgs::msg::Controller();
-              auto ctrl_j = element.value();
-
-              controller_msg.axis_x = ctrl_j["axisX"].get<float>();
-              controller_msg.axis_y = ctrl_j["axisY"].get<float>();
-              controller_msg.axis_click = ctrl_j["axisClick"].get<bool>();
-              controller_msg.gripper = ctrl_j["grip"].get<float>();
-              controller_msg.trigger = ctrl_j["trigger"].get<float>();
-              controller_msg.primary_button = ctrl_j["primaryButton"].get<bool>();
-              controller_msg.secondary_button = ctrl_j["secondaryButton"].get<bool>();
-              controller_msg.menu_button = ctrl_j["menuButton"].get<bool>();
-              std::vector<float> ctrl_pose = stringToFloatVector(ctrl_j["pose"].get<std::string>());
-              if (ctrl_pose.size() != 7) {
-                std::cerr << "Parse failed: ctrl pose data length != 7" << std::endl;
+            // head
+            auto head_msg = xr_msgs::msg::Head();
+            if (value_obj.contains("Head")) {
+              auto head_j = value_obj["Head"];
+              std::vector<float> head_pose = stringToFloatVector(head_j["pose"].get<std::string>());
+              if (head_pose.size() != 7) {
+                std::cerr << "Parse failed: head pose data length != 7" << std::endl;
               }
-              std::copy(ctrl_pose.begin(), ctrl_pose.end(), controller_msg.pose.data());
-              controller_msg.status = 3;
-
-              if (element.key() == "left") {
-                custom_msg.left_controller = controller_msg;
-              } else {
-                custom_msg.right_controller = controller_msg;
-              }
+              std::copy(head_pose.begin(), head_pose.end(), head_msg.pose.data());
+              head_msg.status = head_j["status"].get<int>();
+            } else {
+              head_msg.status = -1;
             }
-          } else {
-            auto left_controller_msg = xr_msgs::msg::Controller();
-            auto right_controller_msg = xr_msgs::msg::Controller();
-            left_controller_msg.status = -1;
-            right_controller_msg.status = -1;
-            custom_msg.left_controller = left_controller_msg;
-            custom_msg.right_controller = right_controller_msg;
+            custom_msg.head = head_msg;
+
+            // controller
+            if (value_obj.contains("Controller")) {
+              for (auto& element : value_obj["Controller"].items()) {
+                auto controller_msg = xr_msgs::msg::Controller();
+                auto ctrl_j = element.value();
+
+                controller_msg.axis_x = ctrl_j["axisX"].get<float>();
+                controller_msg.axis_y = ctrl_j["axisY"].get<float>();
+                controller_msg.axis_click = ctrl_j["axisClick"].get<bool>();
+                controller_msg.gripper = ctrl_j["grip"].get<float>();
+                controller_msg.trigger = ctrl_j["trigger"].get<float>();
+                controller_msg.primary_button = ctrl_j["primaryButton"].get<bool>();
+                controller_msg.secondary_button = ctrl_j["secondaryButton"].get<bool>();
+                controller_msg.menu_button = ctrl_j["menuButton"].get<bool>();
+                std::vector<float> ctrl_pose = stringToFloatVector(ctrl_j["pose"].get<std::string>());
+                if (ctrl_pose.size() != 7) {
+                  std::cerr << "Parse failed: ctrl pose data length != 7" << std::endl;
+                }
+                std::copy(ctrl_pose.begin(), ctrl_pose.end(), controller_msg.pose.data());
+                controller_msg.status = 3;
+
+                if (element.key() == "left") {
+                  custom_msg.left_controller = controller_msg;
+                } else {
+                  custom_msg.right_controller = controller_msg;
+                }
+              }
+            } else {
+              auto left_controller_msg = xr_msgs::msg::Controller();
+              auto right_controller_msg = xr_msgs::msg::Controller();
+              left_controller_msg.status = -1;
+              right_controller_msg.status = -1;
+              custom_msg.left_controller = left_controller_msg;
+              custom_msg.right_controller = right_controller_msg;
+            }
+
+            // hand
+
+            // body
+
+            publisher_->publish(custom_msg);
+            RCLCPP_INFO(this->get_logger(), "Publishing timestamp_ns '%ld'", custom_msg.timestamp_ns);
+
+          } catch (const std::exception& e) {
+            std::cerr << "Parse failed: " << e.what() << std::endl;
           }
-
-          // hand
-
-          // body
-
-          publisher_->publish(custom_msg);
-          RCLCPP_INFO(this->get_logger(), "Publishing timestamp_ns '%ld'", custom_msg.timestamp_ns);
-
-        } catch (const std::exception& e) {
-          std::cerr << "Parse failed: " << e.what() << std::endl;
-        }
-        break;
+          break;
+      }
+      case PXREADeviceCustomMessage:
+          std::cout << "device custom message" << std::endl;
+          break;
+      case PXREAFullMask:
+          std::cout << "full mask" << std::endl;
+          break;
     }
   }
 

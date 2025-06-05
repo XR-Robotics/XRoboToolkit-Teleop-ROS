@@ -6,7 +6,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 cmake_host_system_information(RESULT ISA_NAME QUERY OS_PLATFORM)
-message("OS_PLATFORM: ${ISA_NAME}")
+message(STATUS "OS_PLATFORM: ${ISA_NAME}")
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -34,12 +34,21 @@ ament_target_dependencies(talker
 if(NOT UNIX)
   message(FATAL_ERROR "Only support UNIX.") 
 endif()
-set(ROBOT_SDK "/opt/apps/roboticsservice/SDK")
+
+# set(ROBOT_SDK "/opt/apps/roboticsservice/SDK")
+# if(NOT EXISTS ${ROBOT_SDK})
+#   message(FATAL_ERROR "robot sdk not found. Please install robot sdk first.") 
+# endif()
+# set(PICORobotSDK_INCLUDE ${ROBOT_SDK}/include)
+# set(PICORobotSDK_LIB_PATH ${ROBOT_SDK}/x64)
+# set(PICORobotSDK_LIB_NAME PXREARobotSDK)
+
+set(ROBOT_SDK "/opt/apps/picobusinesssuite/SDK/clientso/64")
 if(NOT EXISTS ${ROBOT_SDK})
   message(FATAL_ERROR "robot sdk not found. Please install robot sdk first.") 
 endif()
-set(PICORobotSDK_INCLUDE ${ROBOT_SDK}/include)
-set(PICORobotSDK_LIB_PATH ${ROBOT_SDK}/x64)
+set(PICORobotSDK_INCLUDE ${ROBOT_SDK})
+set(PICORobotSDK_LIB_PATH ${ROBOT_SDK})
 set(PICORobotSDK_LIB_NAME PXREARobotSDK)
 
 message(STATUS "PICORobotSDK_INCLUDE: ${PICORobotSDK_INCLUDE}") 
