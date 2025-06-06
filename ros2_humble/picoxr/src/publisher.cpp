@@ -35,9 +35,9 @@ void print_json(const json& j, int indent=1) {
     
     if (j.is_object()) {
         std::cout << indent_str << "{\n";
-        for (const auto& [key, value] : j.items()) {
-            std::cout << indent_str << "  \"" << key << "\": ";
-            print_json(value, indent + 1);
+        for (auto it = j.begin(); it != j.end(); ++it) {
+            std::cout << indent_str << "  \"" << it.key() << "\": ";
+            print_json(it.value(), indent + 1);
             std::cout << ",\n";
         }
         // 删除最后一个多余的逗号
@@ -187,6 +187,7 @@ public:
 
             publisher_->publish(custom_msg);
             RCLCPP_INFO(this->get_logger(), "Publishing timestamp_ns '%ld'", custom_msg.timestamp_ns);
+            RCLCPP_INFO(this->get_logger(), "trigger: %f, %f", custom_msg.left_controller.trigger, custom_msg.right_controller.trigger);
 
           } catch (const std::exception& e) {
             std::cerr << "Parse failed: " << e.what() << std::endl;
