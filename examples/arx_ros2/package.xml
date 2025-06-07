@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>arx_ros2</name>
+  <version>0.0.1</version>
+  <description>ROS2 version of ARX robot toolkit sample</description>
+  <maintainer email="arx@todo.todo">arx</maintainer>
+  <license>MIT</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>arm_control</depend>
+  <depend>xr_msgs</depend>
+  <depend>Eigen3</depend>
+  <!-- 如有自定义消息包，需添加 <depend>pos_cmd_msg</depend> 等 -->
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package> 
