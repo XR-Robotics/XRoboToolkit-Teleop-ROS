@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <map>
 
 #include "arm_control/msg/pos_cmd.hpp"
 #include "arm_control/msg/joint_control.hpp"
@@ -31,23 +32,28 @@ public:
     solver.enable_velocity_limits(true);
     solver.enable_joint_limits(true);
     robot.update_kinematics();
+    std::cout << "init robot.state.q: " << robot.state.q.transpose() << std::endl;
 
     left_effector_pose_init = robot.get_T_world_frame(left_effector_name);
-    right_effector_pose_init = robot.get_T_world_frame(right_effector_name);
-
     left_effector_task = solver.add_frame_task(left_effector_name, left_effector_pose_init);
     left_effector_task.configure(left_effector_name, "soft", 1.0);
     auto left_manipulability = solver.add_manipulability_task(left_effector_name, "both", 1.0);
     left_manipulability.configure("manipulability", "soft", 5e-2);
+    std::cout << "init left_effector_pose: " << left_effector_pose_init.translation().transpose() << std::endl;
 
+    right_effector_pose_init = robot.get_T_world_frame(right_effector_name);
     right_effector_task = solver.add_frame_task(right_effector_name, right_effector_pose_init);
     right_effector_task.configure(right_effector_name, "soft", 1.0);
     auto right_manipulability = solver.add_manipulability_task(right_effector_name, "both", 1.0);
     right_manipulability.configure("manipulability", "soft", 5e-2);
-
-    std::cout << "init left_effector_pose: " << left_effector_pose_init.translation().transpose() << std::endl;
     std::cout << "init right_effector_pose: " << right_effector_pose_init.translation().transpose() << std::endl;
-    std::cout << "init robot.state.q: " << robot.state.q.transpose() << std::endl;
+
+    auto joints_task = solver.add_joints_task();
+    std::map<std::string, double> joints;
+    for (const auto& joint : robot.joint_names()) {
+      joints_task.set_joint(joint, 0.0);
+    }
+    joints_task.configure("joints_regularization", "soft", 5e-4);
   }
   void set_target_pose(const Eigen::Affine3d &left_target_pose, const Eigen::Affine3d &right_target_pose) {
     left_effector_task.set_T_world_frame(left_target_pose);
@@ -67,15 +73,15 @@ public:
     Eigen::Affine3d &left_target_pose,
     Eigen::Affine3d &right_target_pose) {
     
-    left_target_pose.translation() = left_effector_pose_init.translation() + left_relative_pose.translation();
     auto left_q_init = Eigen::Quaterniond(left_effector_pose_init.rotation());
     auto left_q_relative = Eigen::Quaterniond(left_relative_pose.rotation());
+    left_target_pose.translation() = left_effector_pose_init.translation() + left_q_init * left_relative_pose.translation();
     left_target_pose.linear() = (left_q_init.inverse() * left_q_relative).toRotationMatrix();
 
-    right_target_pose.translation() = right_effector_pose_init.translation() + right_relative_pose.translation();
     auto right_q_init = Eigen::Quaterniond(right_effector_pose_init.rotation());
     auto right_q_relative = Eigen::Quaterniond(right_relative_pose.rotation());
-    right_target_pose.linear() = (right_q_init.inverse() * right_q_relative).toRotationMatrix();
+    right_target_pose.translation() = right_effector_pose_init.translation() + right_q_init * right_relative_pose.translation();
+    right_target_pose.linear() = (right_q_relative * right_q_init).toRotationMatrix();
   }
   void reset() {
     robot.reset();
@@ -129,6 +135,7 @@ public:
           left_relative_pose.rotate(Eigen::AngleAxisd(left_msg.roll, Eigen::Vector3d::UnitX()) *
                            Eigen::AngleAxisd(left_msg.pitch, Eigen::Vector3d::UnitY()) *
                            Eigen::AngleAxisd(left_msg.yaw, Eigen::Vector3d::UnitZ()));
+
           Eigen::Affine3d right_relative_pose = Eigen::Affine3d::Identity();
           right_relative_pose.translation() = Eigen::Vector3d(right_msg.x, right_msg.y, right_msg.z);
           right_relative_pose.rotate(Eigen::AngleAxisd(right_msg.roll, Eigen::Vector3d::UnitX()) *
@@ -142,10 +149,10 @@ public:
           placo_ik_->get_joint_positions(left_joint_positions, right_joint_positions);
 
           if (shouldPrint()) {
-            std::cout << "left_pose: " << left_relative_pose.translation().transpose() << std::endl;
-            std::cout << "left_joint_positions: " << left_joint_positions.transpose() << std::endl;
-            // std::cout << "right_pose: " << right_pose.translation().transpose() << std::endl;
-            // std::cout << "right_joint_positions: " << right_joint_positions.transpose() << std::endl;
+            // std::cout << "left_pose: " << left_relative_pose.translation().transpose() << std::endl;
+            // std::cout << "left_joint_positions: " << left_joint_positions.transpose() << std::endl;
+            std::cout << "right_msg rpy: " << right_msg.roll << " " << right_msg.pitch << " " << right_msg.yaw << std::endl;
+            std::cout << "right_joint_positions: " << right_joint_positions.transpose() << std::endl;
           }
 
           for (int i = 0; i < 7; i++) {

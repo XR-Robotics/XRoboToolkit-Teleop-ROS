@@ -1,12 +1,31 @@
 #include "xr_to_arx.h"
 
 void computeRelativePose(const RawPose& origin, const RawPose& current, RawPose& relative) {
-  relative.x = current.x - origin.x;
-  relative.y = current.y - origin.y;
-  relative.z = current.z - origin.z;
+  // relative.x = current.x - origin.x;
+  // relative.y = current.y - origin.y;
+  // relative.z = current.z - origin.z;
+  // tf2::Quaternion q_origin(origin.rx, origin.ry, origin.rz, origin.rw);
+  // tf2::Quaternion q_current(current.rx, current.ry, current.rz, current.rw);
+  // tf2::Quaternion q_relative = q_current * q_origin.inverse();
+  // relative.rx = q_relative.x();
+  // relative.ry = q_relative.y();
+  // relative.rz = q_relative.z();
+  // relative.rw = q_relative.w();
+
+  // 旋转部分
   tf2::Quaternion q_origin(origin.rx, origin.ry, origin.rz, origin.rw);
   tf2::Quaternion q_current(current.rx, current.ry, current.rz, current.rw);
   tf2::Quaternion q_relative = q_current * q_origin.inverse();
+
+  // 平移部分
+  tf2::Vector3 t_origin(origin.x, origin.y, origin.z);
+  tf2::Vector3 t_current(current.x, current.y, current.z);
+  // 先将 current 的平移变换到 origin 坐标系下
+  tf2::Vector3 t_relative = tf2::quatRotate(q_origin.inverse(), t_current - t_origin);
+
+  relative.x = t_relative.x();
+  relative.y = t_relative.y();
+  relative.z = t_relative.z();
   relative.rx = q_relative.x();
   relative.ry = q_relative.y();
   relative.rz = q_relative.z();
