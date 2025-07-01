@@ -58,18 +58,25 @@ cd ws_ros2/src
 ln -s ../../ros2/picoxr
 ln -s ../../ros2/xr_msgs
 ln -s ../../examples/arx_ros2
+ln -s ../../cmake
 ln -s ../../../X7s/x7s/ROS2/x7s_ws/src/arxmsgros2/arm_control
-
+cd ..
+cp ../examples/arx_ros2/scripts/env_humble env
+cp ../examples/arx_ros2/scripts/remote_X7s_ee.sh .
+cp ../examples/arx_ros2/scripts/remote_X7s_joints.sh .
+source ./env
 ```
 
 ### 2. Install Dependencies
 
 ```bash
 # Run the provided install script
-cd examples/arx_ros2
-chmod +x install.sh
-./install.sh
+bash examples/arx_ros2/install.sh
 ```
+
+### 3. Install placo [optional]
+
+`placo` is required for joints control with IK.
 
 ## Build Instructions
 
@@ -78,7 +85,7 @@ chmod +x install.sh
 # Build the project
 cd path_to_ws_ros2
 colcon build 
-source install/setup.bash
+source ./env
 ```
 
 ### Build Options
@@ -179,24 +186,6 @@ export URDF_VIZ_IP_ADDR="localhost:8080"
 ros2 run arx_ros2 urdf_viz
 ```
 
-### Complete Workflow
-
-```bash
-# Terminal 1: Start XR data publisher
-ros2 run picoxr talker
-
-# Terminal 2: Start ARX control with IK
-ros2 run arx_ros2 main_v2
-
-# Terminal 3: Start visualization
-export URDF_VIZ_IP_ADDR="localhost:8080"
-ros2 run arx_ros2 urdf_viz
-
-# Terminal 4: Monitor topics
-ros2 topic echo /joint_control
-ros2 topic echo /ARX_VR_L
-```
-
 ## Configuration
 
 ### URDF Models
@@ -208,9 +197,9 @@ The package includes several URDF models in the `urdf/` directory:
 
 ### Joint Mapping
 
-**Left Arm:** joint5-joint11 (7 DOF)
-**Right Arm:** joint14-joint20 (7 DOF)
-**Head:** joint3, joint4
+- **Left Arm:** joint5-joint11 (7 DOF)
+- **Right Arm:** joint14-joint20 (7 DOF)
+- **Head:** joint3, joint4
 
 ### Control Parameters
 
