@@ -8,7 +8,7 @@ This package provides ROS2 nodes for teleoperating the ARX X7S dual-arm robot us
 
 - **main_v1**: Direct end-effector pose control (publishes to `/ARX_VR_L` and `/ARX_VR_R`)
 - **main_v2**: Joint-level control with inverse kinematics using Placo solver (publishes to `/joint_control` and `/joint_control2`)
-- **urdf_viz**: Visualization node for controlling robot in URDF visualization server
+- **urdf_viz**: Visualization node for controlling robot in `[urdf-viz](https://github.com/openrr/urdf-viz)`.
 
 ## Prerequisites
 
@@ -31,8 +31,8 @@ sudo apt install ros-humble-rclcpp ros-humble-tf2 ros-humble-std-msgs
 The project uses several external libraries that are automatically fetched during build:
 - **Eigen3**: Linear algebra library
 - **Placo**: Kinematics solver library
-- **nlohmann/json**: JSON parsing library
-- **httplib**: HTTP client library, optional for `urdf-viz`.
+- **nlohmann/json**: JSON parsing library, downloaded by `FetchContent`
+- **httplib**: HTTP client library, optional for `urdf-viz`, downloaded by `FetchContent`
 
 **Install Eigen3 using apt:**
 ```bash
@@ -42,12 +42,6 @@ sudo apt install libeigen3-dev
 
 # Verify installation
 pkg-config --modversion eigen3
-```
-
-**Install nlohmann/json using apt:**
-```bash
-# Install nlohmann-json3-dev package
-sudo apt install nlohmann-json3-dev
 ```
 
 #### Custom Message Dependencies
