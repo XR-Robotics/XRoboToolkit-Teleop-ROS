@@ -1,4 +1,4 @@
-# PicoXR Teleoperate ARX in ROS2
+# PICOXR Teleoperate ARX in ROS2
 
 This tutorial explains how to teleoperate ARX X7S robot using PICO XR device.
 
