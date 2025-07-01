@@ -1,0 +1,9 @@
+source /opt/ros/humble/setup.sh
+local_shell="./install/setup.sh"
+if [ -f $local_shell ];then
+    source $local_shell
+fi
+local_env=".venv/bin/activate"
+if [ -f $local_env ];then
+    source $local_env
+fi
