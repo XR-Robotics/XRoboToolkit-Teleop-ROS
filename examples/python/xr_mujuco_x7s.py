@@ -139,7 +139,7 @@ def main():
     ros_thread = Thread(target=run_ros_node)
     ros_thread.start()
 
-    assets_path = os.path.join(os.path.dirname(__file__), "../assets")
+    assets_path = os.path.join(os.path.dirname(__file__), "assets")
     xml = f"{assets_path}/arx_x7s/scene.xml"
     model = mujoco.MjModel.from_xml_path(xml)
     data = mujoco.MjData(model)

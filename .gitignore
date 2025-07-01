@@ -34,3 +34,6 @@
 # vim
 *.swp
 *.swo
+
+# ros ws
+ws_ros2

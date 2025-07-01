@@ -13,7 +13,7 @@ goal = [0.32, -0.13, 0.32]
 
 
 def main():
-    assets_path = os.path.join(os.path.dirname(__file__), "../assets")
+    assets_path = os.path.join(os.path.dirname(__file__), "assets")
     xml = f"{assets_path}/universal_robots_ur5e/scene.xml"
     model = mujoco.MjModel.from_xml_path(xml)
     data = mujoco.MjData(model)
@@ -95,7 +95,7 @@ def main():
 
 
 def main_numpy():
-    assets_path = os.path.join(os.path.dirname(__file__), "../assets")
+    assets_path = os.path.join(os.path.dirname(__file__), "assets")
     xml = f"{assets_path}/universal_robots_ur5e/scene.xml"
     model = mujoco.MjModel.from_xml_path(xml)
     data = mujoco.MjData(model)
