@@ -111,7 +111,9 @@ cd placo
 bash scripts/requirements.sh
 
 # Build Placo
-runcmake
+mkdir -p build/host && cd build/host
+cmake ../.. -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
 
 # Source environment (add to ~/.bashrc for permanent setup)
 source ~/.bashrc
@@ -234,6 +236,81 @@ ros2 run arx_ros2 main_v2
 export URDF_VIZ_IP_ADDR="localhost:8080"
 ros2 run arx_ros2 urdf_viz
 ```
+
+### Remote Control Scripts
+
+The project provides two automated scripts for remote control of the ARX X7S robot:
+
+#### 1. End-Effector Control Script (`remote_X7s_ee.sh`)
+
+This script launches the complete system for end-effector pose control.
+
+**Prerequisites:**
+```bash
+# Set X7s_HOME environment variable to your X7s installation path
+export X7s_HOME=/path/to/your/X7s
+
+# Make script executable
+chmod +x remote_X7s_ee.sh
+```
+
+**Usage:**
+```bash
+# Run the end-effector control script
+./remote_X7s_ee.sh
+```
+
+**What it launches:**
+- **CAN buses**: arx_can0.sh, arx_can1.sh, arx_can5.sh
+- **Body controller**: arx_lift_controller x7s.launch.py
+- **Left arm**: arx_x7_controller left_arm.launch.py
+- **Right arm**: arx_x7_controller right_arm.launch.py
+- **PicoXR service**: PicoXR Robot SDK service
+- **XR data publisher**: picoxr talker
+- **ARX control**: arx_ros2 main_v1 (end-effector control)
+- **Topic monitors**: /joint_control, /ARX_VR_L
+- **Network info**: IP address display
+
+#### 2. Joint-Level Control Script (`remote_X7s_joints.sh`)
+
+This script launches the complete system for joint-level control with inverse kinematics.
+
+**Prerequisites:**
+```bash
+# Set X7s_HOME environment variable to your X7s installation path
+export X7s_HOME=/path/to/your/X7s
+
+# Make script executable
+chmod +x remote_X7s_joints.sh
+```
+
+**Usage:**
+```bash
+# Run the joint-level control script
+./remote_X7s_joints.sh
+```
+
+**What it launches:**
+- **CAN buses**: arx_can0.sh, arx_can1.sh, arx_can5.sh
+- **Body controller**: arx_lift_controller x7s.launch.py
+- **Left arm**: arx_x7_controller left_arm_inference.launch.py
+- **Right arm**: arx_x7_controller right_arm_inference.launch.py
+- **PicoXR service**: PicoXR Robot SDK service
+- **XR data publisher**: picoxr talker
+- **ARX control**: arx_ros2 main_v2 (joint-level control with IK)
+- **Topic monitors**: /joint_control, /ARX_VR_L
+- **Network info**: IP address display
+
+#### Key Differences Between Scripts
+
+| Feature | remote_X7s_ee.sh | remote_X7s_joints.sh |
+|---------|------------------|----------------------|
+| **Control Mode** | End-effector pose | Joint positions with IK |
+| **ARX Node** | main_v1 | main_v2 |
+| **Arm Controllers** | left_arm.launch.py | left_arm_inference.launch.py |
+| | right_arm.launch.py | right_arm_inference.launch.py |
+| **IK Solver** | No | Placo IK solver |
+| **Topics** | /ARX_VR_L, /ARX_VR_R | /joint_control, /joint_control2 |
 
 ## Configuration
 
