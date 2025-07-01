@@ -34,6 +34,22 @@ The project uses several external libraries that are automatically fetched durin
 - **nlohmann/json**: JSON parsing library
 - **httplib**: HTTP client library, optional for `urdf-viz`.
 
+**Install Eigen3 using apt:**
+```bash
+# Install Eigen3 development package
+sudo apt update
+sudo apt install libeigen3-dev
+
+# Verify installation
+pkg-config --modversion eigen3
+```
+
+**Install nlohmann/json using apt:**
+```bash
+# Install nlohmann-json3-dev package
+sudo apt install nlohmann-json3-dev
+```
+
 #### Custom Message Dependencies
 - `arm_control`: Robot control messages
 - `xr_msgs`: XR device messages
@@ -77,6 +93,45 @@ bash examples/arx_ros2/install.sh
 ### 3. Install placo [optional]
 
 `placo` is required for joints control with IK.
+
+#### Prerequisites for Placo
+
+```bash
+# Install system dependencies
+sudo apt update
+sudo apt install -y build-essential cmake git python3-dev python3-pip
+
+# Install Python dependencies
+pip3 install numpy scipy
+```
+
+#### Compile and Install Placo
+
+```bash
+# Clone Placo repository
+cd $HOME/code/github
+git clone https://github.com/Rhoban/placo/
+cd placo
+
+# Install Placo requirements
+bash scripts/requirements.sh
+
+# Build Placo
+runcmake
+
+# Source environment (add to ~/.bashrc for permanent setup)
+source ~/.bashrc
+```
+
+#### Verify Placo Installation
+
+```bash
+# Check if Placo library exists
+ls -la $HOME/code/github/placo/build/host/
+
+# Should see files like:
+# liblibplaco.so (Linux) or liblibplaco.dylib (macOS)
+```
 
 ## Build Instructions
 
