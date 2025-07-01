@@ -8,7 +8,7 @@ This package provides ROS2 nodes for teleoperating the ARX X7S dual-arm robot us
 
 - **main_v1**: Direct end-effector pose control (publishes to `/ARX_VR_L` and `/ARX_VR_R`)
 - **main_v2**: Joint-level control with inverse kinematics using Placo solver (publishes to `/joint_control` and `/joint_control2`)
-- **urdf_viz**: Visualization node for controlling robot in `[urdf-viz](https://github.com/openrr/urdf-viz)`.
+- **urdf_viz**: Visualization node for controlling robot in [urdf-viz](https://github.com/openrr/urdf-viz).
 
 ## Prerequisites
 
