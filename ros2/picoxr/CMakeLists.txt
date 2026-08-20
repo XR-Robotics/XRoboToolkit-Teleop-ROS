@@ -16,10 +16,17 @@ find_package(xr_msgs REQUIRED)
 
 # nlohmann/json
 include(FetchContent)
+set(NLOHMANN_JSON_LOCAL_ARCHIVE "${CMAKE_CURRENT_LIST_DIR}/3rdparty/json.tar.xz")
+if(EXISTS "${NLOHMANN_JSON_LOCAL_ARCHIVE}")
+  set(NLOHMANN_JSON_URL "file://${NLOHMANN_JSON_LOCAL_ARCHIVE}")
+  message(STATUS "nlohmann/json archive: ${NLOHMANN_JSON_LOCAL_ARCHIVE}")
+else()
+  set(NLOHMANN_JSON_URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz")
+  message(WARNING "nlohmann/json local archive not found: ${NLOHMANN_JSON_LOCAL_ARCHIVE}; downloading from ${NLOHMANN_JSON_URL}")
+endif()
 FetchContent_Declare(
   json
-  URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  URL ${NLOHMANN_JSON_URL}
 )
 FetchContent_MakeAvailable(json)
 
